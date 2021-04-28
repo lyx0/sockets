@@ -176,3 +176,55 @@ sin_addr
         unsigned char   s6_addr[16];   // IPv6 address
     };
 ```
+
+struct sockaddr_storage is designed to be large enough to hold IPv4 
+and IPv6 structures. Sometimes you don't know in advance if it fills out 
+your struct sockaddr with anIPv4 or IPv6 address. So you pass in this 
+parallel structure and cast it to the type you need.
+```c 
+    struct sockaddr_storage {
+        sa_family_t  ss_family;     // address family
+    
+        // all this is padding, implementation specific, ignore it:
+        char      __ss_pad1[_SS_PAD1SIZE];
+        int64_t   __ss_align;
+        char      __ss_pad2[_SS_PAD2SIZE];
+    };
+```
+
+### IP Addresses, Part 2
+
+There are a lot of function that allow you to manipulate IP addresses.
+The function inet_pton() (pton stands for presentation to network) converts
+an IP address in numbers-and-dots notationinto either a struct in_addr 
+or a struct in6_addr depending on whether you specify AF_INET or AF_INET6
+
+If you have a IP address "10.12.110.57" or "2001:db8:63b3:1::3490" that you
+want to store in it the conversion can be made like this:
+```c
+    // IPv4:
+    
+    char ip4[INET_ADDRSTRLEN];  // space to hold the IPv4 string
+    struct sockaddr_in sa;      // pretend this is loaded with something
+    
+    inet_ntop(AF_INET, &(sa.sin_addr), ip4, INET_ADDRSTRLEN);
+    
+    printf("The IPv4 address is: %s\n", ip4);
+    
+    
+    // IPv6:
+    
+    char ip6[INET6_ADDRSTRLEN]; // space to hold the IPv6 string
+    struct sockaddr_in6 sa6;    // pretend this is loaded with something
+    
+    inet_ntop(AF_INET6, &(sa6.sin6_addr), ip6, INET6_ADDRSTRLEN);
+    
+    printf("The address is: %s\n", ip6);
+```
+When you call it you pass the address type (IPv4 or IPv6), the address, 
+a pointer to a string to hold the result, and the maximum length of the
+string.
+These functions only work with numeric IP addresses, "www.example.com" wont work.
+For "www.example.com" you will need to use getaddrinfo().
+
+### Private (Or Disconnected) Networks
