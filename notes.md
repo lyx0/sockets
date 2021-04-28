@@ -111,8 +111,9 @@ Two types of numbers you can convert:
 
 Socket descriptor is an int
     
-addrinfo:
-
+addrinfo
+Is used to prep socket address structures for subsequent use.
+Also used in host name lookups, and service name lookups.
 ```c
 struct addrinfo {
 	int              ai_flags;     // AI_PASSIVE, AI_CANONNAME, etc.
@@ -125,5 +126,28 @@ struct addrinfo {
 
 	struct addrinfo *ai_next;      // linked list, next node
 };
+```
+Afterwards you call getaddrinfo() which returns a pointer to a new 
+linked list which filles the fields out for you.
+
+sockaddr holds socket address information
+```c 
+    struct sockaddr {
+        unsigned short    sa_family;    // address family, AF_xxx
+        char              sa_data[14];  // 14 bytes of protocol address
+    }; 
+```
+
+Eventhough connect() wants a struct sockaddr*, you can also use
+a struct sockaddr_in.
+```c 
+    // (IPv4 only--see struct sockaddr_in6 for IPv6)
+    
+    struct sockaddr_in {
+        short int          sin_family;  // Address family, AF_INET
+        unsigned short int sin_port;    // Port number
+        struct in_addr     sin_addr;    // Internet address
+        unsigned char      sin_zero[8]; // Same size as struct sockaddr
+    };
 ```
 
