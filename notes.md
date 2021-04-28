@@ -228,3 +228,16 @@ These functions only work with numeric IP addresses, "www.example.com" wont work
 For "www.example.com" you will need to use getaddrinfo().
 
 ### Private (Or Disconnected) Networks
+
+Lots of places have firewalls that hides the network from the rest of the world
+for their own protection. Oftentimes the firewall translates "internal" IP addresses
+to "external" IP addresses using a process called Network Address Translation (NAT)
+
+10.x.x.x is one of a few reserved networks taht are only used either on fully 
+disconnected networks, or on networks that are behind firewalls.
+Most common ones are 10.x.x.x and 192.168.x.x
+Less common is 172.y.x.x (where y is between 16 and 31)
+
+### Jumping from IPv4 to IPv6
+
+
