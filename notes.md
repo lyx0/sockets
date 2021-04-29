@@ -1,7 +1,7 @@
 my notes while going through 
 https://beej.us/guide/bgnet/html/
 
-### Data Encapsulation
+## Data Encapsulation
 
 SOCK_DGRAM packets: 
 Ethernet <- IP <- UDP <- TFTP <- Data
@@ -31,7 +31,7 @@ Layered Model:
 Stream sockets: send()
 Datagram Sockets: Encapsulate the packet and sendto()
 
-### IP Adresses
+## IP Adresses
 
 IPv4: 192.0.2.111 
 Available: 2^32 (4294967296)
@@ -57,7 +57,7 @@ Conversion between IPv4 and IPv6:
     IPv6: ::ffff:192.0.2.23
 
     
-### Subnets
+## Subnets
 
 192.0.2.12
 Host 12 on network 192.0.2.0
@@ -71,7 +71,7 @@ New Style Netmask:
     IPv6: 2001:db8::/32
     IPv6: 2001:db8:5413:4028::9db9/64
 
-### Port numbers
+## Port numbers
 
 Is a 16 bit number.
 IP is like street number and Port is like Apartment number.
@@ -82,7 +82,7 @@ telnet: 23
 SMTP: 25
 DOOM: 666
 
-### Byte Order
+## Byte Order
 
 Example two-byte hex number: b34f
 Stored as 2 sequential bytes in order
@@ -107,7 +107,7 @@ Two types of numbers you can convert:
     ntohl(), Network to Host Long
     
 
-### Structs
+## Structs
 
 Socket descriptor is an int
     
@@ -192,7 +192,7 @@ parallel structure and cast it to the type you need.
     };
 ```
 
-### IP Addresses, Part 2
+## IP Addresses, Part 2
 
 There are a lot of function that allow you to manipulate IP addresses.
 The function inet_pton() (pton stands for presentation to network) converts
@@ -227,17 +227,54 @@ string.
 These functions only work with numeric IP addresses, "www.example.com" wont work.
 For "www.example.com" you will need to use getaddrinfo().
 
-### Private (Or Disconnected) Networks
+## Private (Or Disconnected) Networks
 
-Lots of places have firewalls that hides the network from the rest of the world
-for their own protection. Oftentimes the firewall translates "internal" IP addresses
-to "external" IP addresses using a process called Network Address Translation (NAT)
+A NAT (Network address translation) is a method of mapping an IP address 
+space into another by modifying network adddress information in the 
+IP header of packets while they are in transit across a traffic routing device.
+
+A NAT enables multiple computers to 'share' an IP address. If i log into a remote
+comptuer it shows the IP address 192.0.2.33 which is the public IP address my ISP
+provided. But if I ask my local computer its IP address is 10.0.0.5.
+The firewall enables this by doing NAT.
+
+Details for which private network numbers are available: [RFC 1918](https://tools.ietf.org/html/rfc1918)
 
 10.x.x.x is one of a few reserved networks taht are only used either on fully 
 disconnected networks, or on networks that are behind firewalls.
 Most common ones are 10.x.x.x and 192.168.x.x
 Less common is 172.y.x.x (where y is between 16 and 31)
 
-### Jumping from IPv4 to IPv6
+## Jumping from IPv4 to IPv6
+
+You could try a few methods.
+1. Try to use `getaddrinfo()` to get all the struct sockaddr info, this will keep
+you ip version-agnostic.
+2. Anything hard-coded related to IP version wrap in a helper function
+3. Change `AF_INET` to `AF_INET6`
+4. Change `PF_INET` to `PF_INET6`
+5. Change `INADDR_ANY` to `in6addr_any` assignments which are slightly different
+```c
+    struct sockaddr_in sa;
+    struct sockaddr_in6 sa6;
+    
+    sa.sin_addr.s_addr = INADDR_ANY;  // use my IPv4 address
+    sa6.sin6_addr = in6addr_any; // use my IPv6 address
+
+```
+
+Also the value `IN6ADDR_ANY_INIT` can be used as an initializer when 
+the `struct in6_addr` is declared:
+```c
+    struct in6_addr ia6 = IN6ADDR_ANY_INIT;
+```
+6. Instead of `struct sockaddr_in` use `strockt sockaddr_in6` and change the 
+appropiate fields. There is no `sin6_zero` field.
+7. Instead of `struct in_addr` use `in6_addr`.
+8. Instead of `inet_aton()` or `inet_addr()` use `inet_pton()`
+9. Instead of `inet_ntoa()` use `inet_ntop()`
+10. Instead of `gethostbyname()`, use the superior `getaddrinfo()`
+11. Instead of `gethostbyaddr()` use the superior `getnameinfo()`.
+12. `INADDR_BROADCAST` no longer works, use IPv6 multicast instead.
 
 
