@@ -284,8 +284,6 @@ takes over and does all the work for you.
 
 ## getaddrinfo()
 
-[Code here](https://github.com/lyx0/sockets/blob/master/51-getaddrinfo/main.c)
-
 It helps set up the structs you need later on.
 It used to be that you would use a function called `gethostbyname()` to do
 DNS lookup. Then you'd load that information by hand into `struct sockaddr_in`
@@ -293,3 +291,47 @@ and use that in your calls.
 
 You now use getaddrinfo() for this, including DNS and service name lookups, 
 which fills out all the structs you need.
+
+```c
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+int getaddrinfo(const char *node,       // e.g. "www.example.com"
+                const char *service,    // "e.g. "http" or port number"
+                const struct addrinfo *hints,
+                struct addrinfo **res);
+```
+
+You give this function three input parameters, and it gives you a pointer to 
+a linked-list, res, of results.
+
+Next is the parameter service which can be a port number, or the name 
+of a particular service, or the /etc/services file like "http" or "ftp" or
+"telnet" or "smtp".
+
+The `hints` parameter points to `struct addrinfo`.
+
+Sample call if you're a server who wants to listen to host's IP address, port 3490.
+
+```c
+int status;
+struct addrinfo hints;
+struct addrinfo *servinfo;  // will point to the results
+
+memset(&hints, 0, sizeof hints); // make sure the struct is empty
+hints.ai_family = AF_UNSPEC;     // don't care IPv4 or IPv6
+hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
+hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
+
+if ((status = getaddrinfo(NULL, "3490", &hints, &servinfo)) != 0) {
+    fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+    exit(1);
+}
+
+// servinfo now points to a linked list of 1 or more struct addrinfos
+
+// ... do everything until you don't need servinfo anymore ....
+
+freeaddrinfo(servinfo); // free the linked-list
+```
