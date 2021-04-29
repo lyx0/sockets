@@ -335,3 +335,34 @@ if ((status = getaddrinfo(NULL, "3490", &hints, &servinfo)) != 0) {
 
 freeaddrinfo(servinfo); // free the linked-list
 ```
+
+Note that `ai_family` is set to `AF_UNSPEC` which means I don't care if 
+it's IPv4 or IPv6. `AF_INET` or `AF_INET6` could be also set.
+`AIPASSIVE` tells `getaddrinfo()` to assign the address of my local host 
+to the socket structures.
+Then we make a call, `getaddrinfo()` returns non-zero on error. If everything
+works properly `servinfo` will point to a linked list of `struct addrinfos`, each 
+contains a `struct sockaddr` we will use later.
+
+Sample call to "www.example.net" on port 3409.
+
+```c
+int status;
+struct addrinfo hints;
+struct addrinfo *servinfo;  // will point to the results
+
+memset(&hints, 0, sizeof hints); // make sure the struct is empty
+hints.ai_family = AF_UNSPEC;     // don't care IPv4 or IPv6
+hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
+
+// get ready to connect
+status = getaddrinfo("www.example.net", "3490", &hints, &servinfo);
+
+// servinfo now points to a linked list of 1 or more struct addrinfos
+
+// etc.
+```
+(Showip sample program)[https://github.com/lyx0/sockets/blob/master/samples/showip.c]
+
+
+
