@@ -277,4 +277,19 @@ appropiate fields. There is no `sin6_zero` field.
 11. Instead of `gethostbyaddr()` use the superior `getnameinfo()`.
 12. `INADDR_BROADCAST` no longer works, use IPv6 multicast instead.
 
+## System Calls or Bust
 
+System calls allow you to access the network functionality, then the kernel
+takes over and does all the work for you.
+
+## getaddrinfo()
+
+[Code here](https://github.com/lyx0/sockets/51-getaddrinfo/main.c)
+
+It helps set up the structs you need later on.
+It used to be that you would use a function called `gethostbyname()` to do
+DNS lookup. Then you'd load that information by hand into `struct sockaddr_in`
+and use that in your calls.
+
+You now use getaddrinfo() for this, including DNS and service name lookups, 
+which fills out all the structs you need.
