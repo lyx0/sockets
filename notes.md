@@ -284,7 +284,7 @@ takes over and does all the work for you.
 
 ## getaddrinfo()
 
-[Code here](https://github.com/lyx0/sockets/51-getaddrinfo/main.c)
+[Code here](https://github.com/lyx0/sockets/blob/master/51-getaddrinfo/main.c)
 
 It helps set up the structs you need later on.
 It used to be that you would use a function called `gethostbyname()` to do
