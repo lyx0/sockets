@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         return 2;
     }
 
-    printf("IP addresses for 5s:\n\n", argv[1]);
+    printf("IP addresses for %s:\n\n", argv[1]);
 
     for (p = res; p != NULL; p = p->ai_next) {
         void *addr;
